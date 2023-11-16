@@ -1,16 +1,16 @@
 import express from 'express'
 const app = express()
 app.use(express.json())
-//Tenho que ter uma rota post para cadastrar um filme
-
-//Salvar em algum lugar o filme que foi cadastrado.
-type Filme = {
-    id:number,
-    titulo:string,
-    descricao:string,
-    imagem:string
-}
-let filmesCadastros:Filme[] = []
+import ListaFilme from './aplicacao/lista-filme.use-case'
+import BancoMongoDB from './infra/banco/banco-mongodb'
+import SalvaFilme from './aplicacao/salva-filme.use-case'
+const bancoMongoDB = new BancoMongoDB()
+app.get('/filmes',async (req,res)=>{
+    //usem o listarFilme Usecase para listar os filmes
+    const listaFilme = new ListaFilme(bancoMongoDB)
+    const filmes = await listaFilme.executar()
+    res.send(filmes)
+})
 app.post('/filmes',(req,res)=>{
     const {id,titulo,descricao,imagem} = req.body
     const filme = {
@@ -23,8 +23,24 @@ app.post('/filmes',(req,res)=>{
     filmesCadastros.push(filme)
     res.status(201).send(filme)
 })
-app.get('/filmes',(req,res)=>{
-    res.send("Filmes Listados com sucesso")
+app.post('/filmes',async(req,res)=>{
+    const {id,titulo,descricao,imagem} = req.body
+    const filme = {
+        id,
+        titulo,
+        descricao,
+        imagem
+    }
+    const salvaFilme = new SalvaFilme (bancoMongoDB)
+    const resposta = await salvaFilme.execute(filme)
+    res.send(filme)
+})
+
+app.get('/filmes',async (req,res)=>{
+    //usem o listarFilme Usecase para listar os filmes
+    const salvaFilme = new SalvarFilme(bancoMongoDB)
+    const filmes = await salvaFilme.executar()
+    res.send(filmes)
 })
 
 app.get('/filmes/:id',(req,res)=>{
@@ -39,3 +55,14 @@ app.get('/filmes/:id',(req,res)=>{
 app.listen(3000,()=>{
     console.log('Servidor rodando na porta 3000')
 })
+
+//Tenho que ter uma rota post para cadastrar um filme
+
+//Salvar em algum lugar o filme que foi cadastrado.
+type Filme = {
+    id:number,
+    titulo:string,
+    descricao:string,
+    imagem:string
+}
+let filmesCadastros:Filme[] = []
