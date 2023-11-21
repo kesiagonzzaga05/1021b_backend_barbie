@@ -36,13 +36,6 @@ app.post('/filmes',async(req,res)=>{
     res.send(filme)
 })
 
-app.get('/filmes',async (req,res)=>{
-    //usem o listarFilme Usecase para listar os filmes
-    const salvaFilme = new SalvarFilme(bancoMongoDB)
-    const filmes = await salvaFilme.executar()
-    res.send(filmes)
-})
-
 app.get('/filmes/:id',(req,res)=>{
     const id = parseInt(req.params.id)
     //FIND para buscar um filme pelo id e retornar para o usuário
