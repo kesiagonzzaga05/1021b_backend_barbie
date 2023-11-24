@@ -6,7 +6,7 @@ export default class SalvaFilme{
     }
     public async execute(input:Input):Promise<Output>{
         const {id, titulo,descricao,imagem} = input
-        const result = await this.repositorio.salvar({id,titulo,descricao,imagem})
+        const result = await this.repositorio.salvar({id, titulo,descricao,imagem})
         const filmeSalvo = {
             id: result.id,
             titulo: result.titulo,
@@ -16,6 +16,7 @@ export default class SalvaFilme{
         return filmeSalvo
     }
 }
+
 type Input = {
     id:number,
     titulo:string,

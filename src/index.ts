@@ -1,6 +1,9 @@
 import express from 'express'
+import cors from 'cors'
+//npm install cors --save
 const app = express()
 app.use(express.json())
+app.use(cors())
 import ListaFilme from './aplicacao/lista-filme.use-case'
 import BancoMongoDB from './infra/banco/banco-mongodb'
 import SalvaFilme from './aplicacao/salva-filme.use-case'
@@ -11,7 +14,7 @@ app.get('/filmes',async (req,res)=>{
     const filmes = await listaFilme.executar()
     res.send(filmes)
 })
-app.post('/filmes',(req,res)=>{
+app.post('/filmes',async (req,res)=>{
     const {id,titulo,descricao,imagem} = req.body
     const filme = {
         id,
@@ -20,20 +23,13 @@ app.post('/filmes',(req,res)=>{
         imagem
     }
     //Como eu salvo o filme que foi cadastrado no meu vetor de filmes (Banco de dados)
-    filmesCadastros.push(filme)
-    res.status(201).send(filme)
-})
-app.post('/filmes',async(req,res)=>{
-    const {id,titulo,descricao,imagem} = req.body
-    const filme = {
-        id,
-        titulo,
-        descricao,
-        imagem
-    }
-    const salvaFilme = new SalvaFilme (bancoMongoDB)
+    const salvaFilme = new SalvaFilme(bancoMongoDB)
     const resposta = await salvaFilme.execute(filme)
-    res.send(filme)
+    res.status(201).send(filme)
+    // try{
+    // }catch(error){
+    //     res.status(400).send({"mensagem":"Erro ao cadastrar o filme"})
+    // }
 })
 
 app.get('/filmes/:id',(req,res)=>{
